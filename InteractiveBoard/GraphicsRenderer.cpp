@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../GameEngine/Board.cpp" 
+#include "../GameEngine/board/Board.cpp" 
 #include <iostream>
 #include <optional>
 #include <map>

@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "GraphicsRenderer.cpp"
 #include "../GameEngine/GameController.cpp" 
-#include "../GameEngine/BoardInitializer.cpp" 
+#include "../GameEngine/board/BoardInitializer.cpp" 
 #include <iostream>
 #include <optional>
 

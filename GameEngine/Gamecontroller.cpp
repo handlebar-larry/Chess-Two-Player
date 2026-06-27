@@ -1,7 +1,7 @@
 #pragma once
-#include "Board.cpp"
-#include "GameState.cpp"
-#include "SpecialOperations.cpp"
+#include "board/Board.cpp"
+#include "protocols/GameState.cpp"
+#include "protocols/SpecialOperations.cpp"
 #include <iostream>
 #include <utility>
 #include <cmath>

@@ -1,6 +1,6 @@
 #pragma once
 #include "Piece.cpp"
-#include "../MoveRules.cpp"
+#include "../protocols/MoveRules.cpp"
 
 class Queen : public Piece {
 public:
