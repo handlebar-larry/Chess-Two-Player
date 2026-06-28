@@ -2,6 +2,7 @@
 #include "board/Board.cpp"
 #include "protocols/GameState.cpp"
 #include "protocols/SpecialOperations.cpp"
+#include "Sidepanel/CaptureTracker.cpp"
 #include <iostream>
 #include <utility>
 #include <cmath>
@@ -13,6 +14,7 @@ private:
     GameState stateManager;   
     bool gameRunning;         
     std::pair<int, int> enPassantTarget; 
+    CaptureTracker tracker;
 
     // Helper: Validates core inputs and ownership
     bool isInputSelectionValid(int sx, int sy) {
@@ -52,6 +54,10 @@ public:
     Board& getBoard() { return board; }
     bool isGameActive() const { return gameRunning; }
 
+    CaptureTracker getCaptureTracker(){
+        return tracker;
+    }
+
     /**
      * 🔗 THE NEW INTERACTIVE FRONTEND LINK
      * This replaces handlePlayerPrompt(). Instead of pausing for terminal input, 
@@ -89,7 +95,10 @@ public:
 
         // --- STANDARD RESOLUTION ---
         Piece* targetPiece = board.getPiece(ex, ey);
-        if (targetPiece) delete targetPiece;
+        if (targetPiece) {
+            delete targetPiece;
+            tracker.logCapture(targetPiece->getType(), movingPiece->getColor());
+        }
 
         board.movePieceOnMatrix(sx, sy, ex, ey);
         bool promoted = SpecialOperations::handlePromotion(ex, ey, board);

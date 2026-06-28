@@ -45,7 +45,6 @@ public:
     }
 
     void drawGame(sf::RenderWindow& window, const Board& board) {
-        window.clear();
         
         if (boardSprite) {
             window.draw(*boardSprite); 
@@ -68,10 +67,8 @@ public:
                 }
             }
         }
-        window.display();
+        
     }
-
-private:
     sf::Sprite getSpriteForPiece(PieceType type, Color color) {
         // FORCE STRINGS TO LOWERCASE TO MATCH YOUR "white-king.png" DIRECTORY FILENAMES
         std::string colorKey = (color == Color::White) ? "white" : "black";
