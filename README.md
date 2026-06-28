@@ -23,39 +23,57 @@ A modular, event-driven 2D Chess Engine written in modern C++ utilizing the **Si
   - Checkmate detection
   - Illegal move prevention
   - King safety validation
+ 
+ - **Side panel**
+  - shows captured pieces history
+  - shows points status imbalance
 
 - **Optimized Graphics**
   - 128×128 textures rendered within 120×120 board tiles for clean spacing and alignment.
 
 ---
 
-## 📐 Project Structure
-
 ```text
 project-chess/
 │
-├── GameEngine/                      # Core chess engine
-│   ├── Pieces/                      # Piece implementations
-│   │   ├── Bishop.cpp
-│   │   ├── King.cpp
-│   │   ├── Knight.cpp
-│   │   ├── Pawn.cpp
-│   │   ├── Piece.cpp                # Abstract base class
-│   │   ├── Queen.cpp
-│   │   └── Rook.cpp
+├── GameEngine/                      # 🧠 CORE CHESS LOGIC & STATE (Backend)
+│   ├── board/                       # Game board state matrix
+│   │   ├── Board.cpp
+│   │   └── BoardInitializer.cpp     # Sets up the initial standard 32 pieces
 │   │
-│   ├── Board.cpp                    # Board representation
-│   ├── BoardInitializer.cpp         # Initial board setup
-│   ├── GameController.cpp           # Turn management & move handling
-│   ├── GameState.cpp                # Check, checkmate & stalemate detection
-│   └── SpecialOperations.cpp        # Castling, En Passant & Promotion
+│   ├── Pieces/                      # Object-Oriented piece classes
+│   │   ├── bishop.cpp
+│   │   ├── king.cpp
+│   │   ├── knight.cpp
+│   │   ├── pawn.cpp
+│   │   ├── piece.cpp                # Abstract base class & piece attributes
+│   │   ├── queen.cpp
+│   │   └── rook.cpp
+│   │
+│   ├── protocols/                   # Rule enforcement managers
+│   │   ├── GameState.cpp            # Check, checkmate, and stalemate flags
+│   │   ├── MoveRules.cpp            # Classic ray/vector move validations
+│   │   └── SpecialOperations.cpp    # Rules for Castling, En Passant, and Promotions
+│   │
+│   ├── Sidepanel/                   # Engine-side analytics data tracking
+│   │   └── CaptureTracker.cpp       # Tracks captured pieces, point values, and material imbalance
+│   │
+│   └── GameController.cpp           # Master engine orchestration & turn management loop
 │
-├── InteractiveBoard/
-│   ├── assets/                      # Piece textures
-│   ├── GraphicsRenderer.cpp         # Rendering engine
-│   └── main_gui.cpp                 # Application entry point
-│
-└── README.md
+└── InteractiveBoard/                # 🎨 GRAPHICAL USER INTERFACE (SFML Frontend)
+    ├── assets/                      # Raw texture and image assets
+    │   ├── chessboard.png           # 8x8 background board graphic
+    │   ├── black-bishop.png
+    │   ├── black-king.png
+    │   └── ... (All 12 independent 128x128 piece texture variations)
+    │
+    ├── Sidepanel/                   # Dashboard UI layout overlay
+    │   ├── arial.ttf                # Local TrueType Font asset for scoreboard text
+    │   └── SidePanel.cpp            # UI layer rendering scores and captured piece grids
+    │
+    ├── GraphicsRenderer.cpp         # Draws active board matrix arrays to the VRAM buffer
+    ├── main_gui.cpp                 # Main entry point, event poller, and mouse grid translator
+    └── chess_gui.exe                # Compiled application binary target
 ```
 
 ---
