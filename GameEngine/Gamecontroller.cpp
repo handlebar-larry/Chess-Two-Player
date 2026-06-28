@@ -103,6 +103,12 @@ public:
         board.movePieceOnMatrix(sx, sy, ex, ey);
         bool promoted = SpecialOperations::handlePromotion(ex, ey, board);
 
+        if(promoted){
+            tracker.logCapture(board.getPiece(ex,ey)->getType(), movingPiece->getColor());
+            Color victimColor = movingPiece->getColor() == Color::White ? Color::Black : Color::White;
+            tracker.logCapture(movingPiece->getType(),victimColor);
+        }
+
         // Update history tracking states
         enPassantTarget = {-1, -1};
         if (!promoted && board.getPiece(ex, ey)->getType() == PieceType::Pawn && std::abs(sx - ex) == 2) {
