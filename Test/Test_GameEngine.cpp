@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../comon.h
+#include "../comon.h"
 #include "../GameEngine/GameController.h"
 #include "../GameEngine/board/Board.h"
 #include "../GameEngine/protocols/GameState.h"

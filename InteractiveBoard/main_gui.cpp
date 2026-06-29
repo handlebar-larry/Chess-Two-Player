@@ -5,21 +5,31 @@
 #include "../comon.h"
 
 int main() {
-    // 120px grid spacing matched to your high-res asset bounds
     const int TILE_SIZE = 120;
-
     const int BOARD_SIZE = 960;
-    const int SIDEBAR_WIDTH = 300;
-    const int WINDOW_WIDTH = BOARD_SIZE + SIDEBAR_WIDTH;
-    const int WINDOW_HEIGHT = BOARD_SIZE;
+    const int SIDEBAR_WIDTH = 400;
 
-    sf::RenderWindow window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "Two Player Chess Engine");
+    // 🎯 The fixed logical blueprint coordinate space (1360 x 960)
+    const float VIRTUAL_WIDTH = static_cast<float>(BOARD_SIZE + SIDEBAR_WIDTH); 
+    const float VIRTUAL_HEIGHT = static_cast<float>(BOARD_SIZE);
+
+    sf::RenderWindow window(sf::VideoMode({1360, 960}), 
+                            "Two Player Chess Engine", 
+                            sf::Style::Default);
+
+    // Lock down the game canvas coordinates at their native scaling aspect ratios
+    sf::View gameView(sf::FloatRect({0.f, 0.f}, {VIRTUAL_WIDTH, VIRTUAL_HEIGHT}));
+
+    window.setView(window.getDefaultView());
+    window.clear(sf::Color(35, 35, 35));
+
+    window.setView(gameView);
 
     GameController engine;
     GraphicsRenderer renderer;
     
-    // 🎯 INITIALIZE SIDE PANEL: Position it exactly where the board ends (x = 960)
-    SidePanel sidePanel(BOARD_SIZE, SIDEBAR_WIDTH, WINDOW_HEIGHT);
+    // Initialize Side Panel exactly where the board ends (x = 960)
+    SidePanel sidePanel(BOARD_SIZE, SIDEBAR_WIDTH, VIRTUAL_HEIGHT);
 
     // Sets up the initial 32 piece layout matrices on your backend board state
     BoardInitializer::setupStandardGame(engine.getBoard());
@@ -36,24 +46,48 @@ int main() {
                 window.close();
             }
 
+            // 🎯 THE PERFECT BALANCED PILLARBOX CENTERING RESIZE HANDLE
+            if (const auto* resized = event->getIf<sf::Event::Resized>()) {
+                float windowWidth = static_cast<float>(resized->size.x);
+                float windowHeight = static_cast<float>(resized->size.y);
+
+                float targetRatio = VIRTUAL_WIDTH / VIRTUAL_HEIGHT;
+                float currentRatio = windowWidth / windowHeight;
+
+                float viewportX = 0.f, viewportY = 0.f;
+                float viewportWidth = 1.f, viewportHeight = 1.f;
+
+                // Monitor aspect is too wide -> Add equal margins on left and right sides
+                if (currentRatio > targetRatio) {
+                    viewportWidth = targetRatio / currentRatio;
+                    viewportX = (1.f - viewportWidth) / 2.f; 
+                } 
+                // Monitor aspect is too tall -> Add equal margins on top and bottom sides
+                else {
+                    viewportHeight = currentRatio / targetRatio;
+                    viewportY = (1.f - viewportHeight) / 2.f;
+                }
+
+                // Apply the balanced margins straight onto our persistent game view
+                gameView.setViewport(sf::FloatRect({viewportX, viewportY}, {viewportWidth, viewportHeight}));
+                window.setView(gameView);
+            }
+
             if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mousePressed->button == sf::Mouse::Button::Left) {
-                    int mouseX = mousePressed->position.x;
-                    int mouseY = mousePressed->position.y;
+                    // 🎯 Map screen pixel clicks cleanly into our letterboxed virtual coordinate zone
+                    sf::Vector2f worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-                    // 🛡️ CRITICAL GUARD: If user clicks inside the sidebar UI region, 
-                    // intercept it so it doesn't trigger out-of-bounds board array access!
-                    if (mouseX >= BOARD_SIZE) {
-                        std::cout << "XD Sidebar interaction detected (Ignored for piece movement).\n";
+                    // Intercept sidebar interaction clicks safely
+                    if (worldPos.x >= BOARD_SIZE || worldPos.x < 0 || worldPos.y < 0 || worldPos.y >= VIRTUAL_HEIGHT) {
+                        std::cout << "XD Interface boundary interaction detected (Ignored for piece movement).\n";
                         continue; 
                     }
 
-                    // Translates screen pixels accurately to 0-7 board matrix index coordinates
-                    int clickedCol = mouseX / TILE_SIZE; 
-                    int clickedRow = mouseY / TILE_SIZE; 
+                    int clickedCol = static_cast<int>(worldPos.x) / TILE_SIZE; 
+                    int clickedRow = static_cast<int>(worldPos.y) / TILE_SIZE; 
 
                     if (!isPieceSelected) {
-                        // FIRST CLICK: Select a piece from the board matrix
                         if (engine.getBoard().getPiece(clickedRow, clickedCol) != nullptr) {
                             startX = clickedRow;
                             startY = clickedCol;
@@ -61,14 +95,12 @@ int main() {
                             std::cout << "-_- Selected Piece at Matrix Row: " << startX << ", Col: " << startY << "\n";
                         }
                     } else {
-                        // SECOND CLICK: Destination targeting
                         int endX = clickedRow;
                         int endY = clickedCol;
-                        isPieceSelected = false; // Reset selection token immediately
+                        isPieceSelected = false;
 
                         std::cout << "-_- Requesting Move to Matrix Row: " << endX << ", Col: " << endY << "\n";
                         
-                        // 🔗 ENGINE BRIDGE: Passes execution directly to your backend controller.
                         if (engine.handleMove(startX, startY, endX, endY)) {
                             std::cout << "-_- Engine validated move! State updated.\n";
                         } else {
@@ -79,13 +111,14 @@ int main() {
             }
         }
 
-        window.clear();
+        // 🎯 MATCHING PLATES GRAPHICS COLOR EXTENSION
+        // Wipe the entire application display layout to your exact panel slate-gray color!
+        window.clear(sf::Color(35, 35, 35));
 
-        // 1. Draw the latest validated board configuration
+        // 1. Draw the chessboard configuration
         renderer.drawGame(window, engine.getBoard());
 
-        // 2. 🔗 RENDERING THE UI SIDE PANEL: 
-        // Feed it your independent CaptureTracker instance tracking vectors natively!
+        // 2. Render the UI Sidepanel elements safely using your exact matching asset map
         auto tracker = engine.getCaptureTracker(); 
         sidePanel.render(window, 
                          tracker.getWhiteScore(), 

@@ -27,6 +27,7 @@ public:
                 int whiteScore, int blackScore, int imbalance,
                 const std::vector<PieceType>& whiteCaptured, 
                 const std::vector<PieceType>& blackCaptured);
+    
 };
 
 sf::Sprite SidePanel::getMiniSprite(PieceType type, Color color) {
@@ -42,7 +43,7 @@ SidePanel::SidePanel(float boardSize, float width, float height)
     // 1. Dark Gray background layout block
     background.setSize(sf::Vector2f(panelWidth, panelHeight));
     background.setPosition({startX, 0});
-    background.setFillColor(sf::Color(35, 35, 35)); 
+    background.setFillColor(sf::Color(35,35,40)); 
 
     // 2. Load the UI text font 
     if (!font.openFromFile("Sidepanel/arial.ttf")) { 
