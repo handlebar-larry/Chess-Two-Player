@@ -1,10 +1,8 @@
-#include <SFML/Graphics.hpp>
-#include "GraphicsRenderer.cpp"
-#include "../GameEngine/GameController.cpp" 
-#include "../GameEngine/board/BoardInitializer.cpp" 
-#include "Sidepanel/SidePanel.cpp" // Core UI Component
-#include <iostream>
-#include <optional>
+#include "GraphicsRenderer.h"
+#include "../GameEngine/GameController.h" 
+#include "../GameEngine/board/BoardInitializer.h" 
+#include "Sidepanel/SidePanel.h"
+#include "../comon.h"
 
 int main() {
     // 120px grid spacing matched to your high-res asset bounds
@@ -29,7 +27,7 @@ int main() {
     bool isPieceSelected = false;
     int startX = -1, startY = -1;
 
-    std::cout << "🚀 Connected Interactive Board & Sidepanel to Engine Loop!\n";
+    std::cout << "-_- Connected Interactive Board & Sidepanel to Engine Loop!\n";
 
     while (window.isOpen()) {
         while (const std::optional<sf::Event> event = window.pollEvent()) {
@@ -46,7 +44,7 @@ int main() {
                     // 🛡️ CRITICAL GUARD: If user clicks inside the sidebar UI region, 
                     // intercept it so it doesn't trigger out-of-bounds board array access!
                     if (mouseX >= BOARD_SIZE) {
-                        std::cout << "🕹️ Sidebar interaction detected (Ignored for piece movement).\n";
+                        std::cout << "XD Sidebar interaction detected (Ignored for piece movement).\n";
                         continue; 
                     }
 
@@ -60,7 +58,7 @@ int main() {
                             startX = clickedRow;
                             startY = clickedCol;
                             isPieceSelected = true;
-                            std::cout << "🎯 Selected Piece at Matrix Row: " << startX << ", Col: " << startY << "\n";
+                            std::cout << "-_- Selected Piece at Matrix Row: " << startX << ", Col: " << startY << "\n";
                         }
                     } else {
                         // SECOND CLICK: Destination targeting
@@ -68,13 +66,13 @@ int main() {
                         int endY = clickedCol;
                         isPieceSelected = false; // Reset selection token immediately
 
-                        std::cout << "📍 Requesting Move to Matrix Row: " << endX << ", Col: " << endY << "\n";
+                        std::cout << "-_- Requesting Move to Matrix Row: " << endX << ", Col: " << endY << "\n";
                         
                         // 🔗 ENGINE BRIDGE: Passes execution directly to your backend controller.
                         if (engine.handleMove(startX, startY, endX, endY)) {
-                            std::cout << "✅ Engine validated move! State updated.\n";
+                            std::cout << "-_- Engine validated move! State updated.\n";
                         } else {
-                            std::cout << "❌ Illegal move rejected by backend rules.\n";
+                            std::cout << "XD Illegal move rejected by backend rules.\n";
                         }
                     }
                 }
