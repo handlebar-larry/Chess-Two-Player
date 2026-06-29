@@ -38,27 +38,28 @@ project-chess/
 │
 ├── GameEngine/                      # 🧠 CORE CHESS LOGIC & STATE (Backend)
 │   ├── board/                       # Game board state matrix
-│   │   ├── Board.cpp
-│   │   └── BoardInitializer.cpp     # Sets up the initial standard 32 pieces
+│   │   ├── Board.h
+│   │   └── BoardInitializer.h       # Sets up the initial standard 32 pieces
 │   │
 │   ├── Pieces/                      # Object-Oriented piece classes
-│   │   ├── bishop.cpp
-│   │   ├── king.cpp
-│   │   ├── knight.cpp
-│   │   ├── pawn.cpp
-│   │   ├── piece.cpp                # Abstract base class & piece attributes
-│   │   ├── queen.cpp
-│   │   └── rook.cpp
+│   │   ├── bishop.h
+│   │   ├── king.h
+│   │   ├── knight.h
+│   │   ├── pawn.h
+│   │   ├── piece.h                  # Abstract base class & piece attributes
+│   │   ├── queen.h
+│   │   └── rook.h
 │   │
 │   ├── protocols/                   # Rule enforcement managers
-│   │   ├── GameState.cpp            # Check, checkmate, and stalemate flags
-│   │   ├── MoveRules.cpp            # Classic ray/vector move validations
-│   │   └── SpecialOperations.cpp    # Rules for Castling, En Passant, and Promotions
+│   │   ├── GameState.h              # Check, checkmate, and stalemate flags
+│   │   ├── MoveRules.h              # Classic ray/vector move validations
+│   │   └── SpecialOperations.h      # Rules for Castling, En Passant, and Promotions
 │   │
 │   ├── Sidepanel/                   # Engine-side analytics data tracking
-│   │   └── CaptureTracker.cpp       # Tracks captured pieces, point values, and material imbalance
+│   │   ├── CaptureTracker.h         # header file for the side panel
+|   |   └── CaptureTracker.cpp       # Tracks captured pieces, point values, and material imbalance
 │   │
-│   └── GameController.cpp           # Master engine orchestration & turn management loop
+│   └── GameController.h             # Master engine orchestration & turn management loop
 │
 └── InteractiveBoard/                # 🎨 GRAPHICAL USER INTERFACE (SFML Frontend)
 |   ├── assets/                      # Raw texture and image assets
@@ -69,10 +70,10 @@ project-chess/
 |   │
 |   ├── Sidepanel/                   # Dashboard UI layout overlay
 |   │   ├── arial.ttf                # Local TrueType Font asset for scoreboard text
-|   │   └── SidePanel.cpp            # UI layer rendering scores and captured piece grids
+|   │   └── SidePanel.h              # UI layer rendering scores and captured piece grids
 |   │
-|   ├── GraphicsRenderer.cpp         # Draws active board matrix arrays to the VRAM buffer
-|   ├── main_gui.cpp                 # Main entry point, event poller, and mouse grid translator
+|   ├── GraphicsRenderer.h           # Draws active board matrix arrays to the VRAM buffer
+|   ├── main_gui.h                   # Main entry point, event poller, and mouse grid translator
 |   └── chess_gui.exe                # Compiled application binary target
 |
 └── comon.h                          # store all the nessecary library imports for the project in one master header file
