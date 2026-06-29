@@ -62,6 +62,32 @@ public:
                 }
             }
         }
+
+        sf::Font boardFont;
+        if (!boardFont.openFromFile("Sidepanel/arial.ttf")) {
+            std::cerr << "XD RUNTIME ERROR: Board markers nahi mile! Path check kijiye.\n";
+        }
+
+        sf::Text rankFileText(boardFont);
+        rankFileText.setFont(boardFont);
+        rankFileText.setCharacterSize(18);
+
+        // 1. Draw Files (a-h) along the bottom edge of Row index 7
+        for (int c = 0; c < 8; ++c) {
+            rankFileText.setString(static_cast<char>('a' + c));
+            // Alternating text color contrast depending on tile background colors
+            rankFileText.setFillColor(sf::Color(35, 35, 35)); 
+            rankFileText.setPosition({static_cast<float>(c * TILE_SIZE) + 5.f, static_cast<float>(8 * TILE_SIZE) - 20.f});
+            window.draw(rankFileText);
+        }
+
+        // 2. Draw Ranks (1-8) along the right side of Column index 7
+        for (int r = 0; r < 8; ++r) {
+            rankFileText.setString(static_cast<char>('8' - r));
+            rankFileText.setFillColor(sf::Color(35, 35, 35));
+            rankFileText.setPosition({static_cast<float>(8 * TILE_SIZE) - 15.f, static_cast<float>(r * TILE_SIZE) + 5.f});
+            window.draw(rankFileText);
+        }
         
     }
     sf::Sprite getSpriteForPiece(PieceType type, Color color) {

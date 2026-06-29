@@ -29,7 +29,8 @@ public:
         return {-1, -1}; 
     }
 
-    bool isCheck(Color kingColor, const Board& board) const {
+    bool isCheck(Color kingColor, Board& board) const {
+        
         pair<int, int> kingPos = findKing(kingColor, board);
         if (kingPos.first == -1) return false; 
 
@@ -76,6 +77,7 @@ public:
 
         board.setPiece(startX, startY, movingPiece);
         board.setPiece(endX, endY, targetPiece);
+
         return safe;
     }
 

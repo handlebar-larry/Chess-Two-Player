@@ -4,6 +4,8 @@
 #include "Sidepanel/SidePanel.h"
 #include "../comon.h"
 
+using namespace std;
+
 int main() {
     const int TILE_SIZE = 120;
     const int BOARD_SIZE = 960;
@@ -12,6 +14,8 @@ int main() {
     // 🎯 The fixed logical blueprint coordinate space (1360 x 960)
     const float VIRTUAL_WIDTH = static_cast<float>(BOARD_SIZE + SIDEBAR_WIDTH); 
     const float VIRTUAL_HEIGHT = static_cast<float>(BOARD_SIZE);
+
+    vector<string>moveHistory;
 
     sf::RenderWindow window(sf::VideoMode({1360, 960}), 
                             "Two Player Chess Engine", 
@@ -101,15 +105,31 @@ int main() {
 
                         std::cout << "-_- Requesting Move to Matrix Row: " << endX << ", Col: " << endY << "\n";
                         
+                        Piece* movingPiece= engine.getBoard().getPiece(startX, startY);
+                        bool pieceThere = engine.getBoard().getPiece(endX, endY) != NULL;
+
                         if (engine.handleMove(startX, startY, endX, endY)) {
                             std::cout << "-_- Engine validated move! State updated.\n";
-                        } else {
+                            string move = generateMoveString(startX, startY, endX, endY, 
+                                                        movingPiece->getType(), 
+                                                        pieceThere,
+                                                        engine.getBoard());
+                            moveHistory.push_back(move);
+                        } 
+                        else {
                             std::cout << "XD Illegal move rejected by backend rules.\n";
                         }
                     }
                 }
             }
+
+            if (const auto* mouseWheel = event->getIf<sf::Event::MouseWheelScrolled>()) {
+                if (mouseWheel->wheel == sf::Mouse::Wheel::Vertical) {
+                    sidePanel.handleScroll(mouseWheel->delta);
+                }
+            }
         }
+
 
         // 🎯 MATCHING PLATES GRAPHICS COLOR EXTENSION
         // Wipe the entire application display layout to your exact panel slate-gray color!
@@ -120,12 +140,9 @@ int main() {
 
         // 2. Render the UI Sidepanel elements safely using your exact matching asset map
         auto tracker = engine.getCaptureTracker(); 
-        sidePanel.render(window, 
-                         tracker.getWhiteScore(), 
-                         tracker.getBlackScore(), 
-                         tracker.getPointImbalance(),
-                         tracker.getWhiteCapturedList(), 
-                         tracker.getBlackCapturedList());
+        sidePanel.render(window, tracker.getPointImbalance(), moveHistory, 
+                                tracker.getWhiteCapturedList(), 
+                                tracker.getBlackCapturedList());
 
         window.display();
     }

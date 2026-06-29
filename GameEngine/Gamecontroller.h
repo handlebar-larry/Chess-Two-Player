@@ -3,6 +3,7 @@
 #include "protocols/GameState.h"
 #include "protocols/SpecialOperations.h"
 #include "Sidepanel/CaptureTracker.cpp"
+#include "Sidepanel/MoveHistory.h"
 #include "../comon.h"
 
 using namespace std;
@@ -15,6 +16,7 @@ private:
     bool gameRunning;         
     pair<int, int> enPassantTarget; 
     CaptureTracker tracker;
+    int halfMoveClock = 0;
 
     bool isInputSelectionValid(int sx, int sy) {
         Piece* p = board.getPiece(sx, sy);
@@ -59,6 +61,10 @@ public:
     bool handleMove(int sx, int sy, int ex, int ey) {
         if (!gameRunning) return false;
         if (!isInputSelectionValid(sx, sy)) return false;
+
+        Piece* p = board.getPiece(sx, sy);
+        bool isCapture = (board.getPiece(ex, ey) != nullptr);
+        bool isPawn = (p && p->getType() == PieceType::Pawn);
 
         if (SpecialOperations::tryCastling(sx, sy, ex, ey, currentTurn, board, stateManager)) { 
             switchTurn(); 
@@ -105,8 +111,20 @@ public:
             enPassantTarget = {(sx + ex) / 2, sy};
         }
 
+        if (isPawn || isCapture) {
+            halfMoveClock = 0; // Reset counter completely
+        } else {
+            halfMoveClock++; // Increment for vanilla piece steps
+        }
+
+        if (halfMoveClock >= 100) { // 100 half-moves = 50 full turns
+            cout << "🏳️ Game Draw via 50-Move Rule Limit Triggered!\n";
+            return false;
+        }
+
         cout << "[noice move] Move successful!\n";
         switchTurn();
         return true;
     }
+    
 };
