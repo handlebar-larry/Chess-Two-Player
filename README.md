@@ -61,19 +61,21 @@ project-chess/
 │   └── GameController.cpp           # Master engine orchestration & turn management loop
 │
 └── InteractiveBoard/                # 🎨 GRAPHICAL USER INTERFACE (SFML Frontend)
-    ├── assets/                      # Raw texture and image assets
-    │   ├── chessboard.png           # 8x8 background board graphic
-    │   ├── black-bishop.png
-    │   ├── black-king.png
-    │   └── ... (All 12 independent 128x128 piece texture variations)
-    │
-    ├── Sidepanel/                   # Dashboard UI layout overlay
-    │   ├── arial.ttf                # Local TrueType Font asset for scoreboard text
-    │   └── SidePanel.cpp            # UI layer rendering scores and captured piece grids
-    │
-    ├── GraphicsRenderer.cpp         # Draws active board matrix arrays to the VRAM buffer
-    ├── main_gui.cpp                 # Main entry point, event poller, and mouse grid translator
-    └── chess_gui.exe                # Compiled application binary target
+|   ├── assets/                      # Raw texture and image assets
+|   │   ├── chessboard.png           # 8x8 background board graphic
+|   │   ├── black-bishop.png
+|   │   ├── black-king.png
+|   │   └── ... (All 12 independent 128x128 piece texture variations)
+|   │
+|   ├── Sidepanel/                   # Dashboard UI layout overlay
+|   │   ├── arial.ttf                # Local TrueType Font asset for scoreboard text
+|   │   └── SidePanel.cpp            # UI layer rendering scores and captured piece grids
+|   │
+|   ├── GraphicsRenderer.cpp         # Draws active board matrix arrays to the VRAM buffer
+|   ├── main_gui.cpp                 # Main entry point, event poller, and mouse grid translator
+|   └── chess_gui.exe                # Compiled application binary target
+|
+└── comon.h                          # store all the nessecary library imports for the project in one master header file
 ```
 
 ---
