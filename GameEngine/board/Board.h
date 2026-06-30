@@ -1,5 +1,4 @@
 #pragma once
-#include "../../comon.h"
 #include "../Pieces/piece.h"
 
 /**

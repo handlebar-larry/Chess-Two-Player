@@ -1,6 +1,13 @@
-#include "../../comon.h"
-#include "../../GameEngine/Pieces/piece.h"
+#pragma once
+
 #include "../GraphicsRenderer.h"
+#include "../ViewTypes.h"
+#include <SFML/Graphics.hpp>
+#include <cmath>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -16,7 +23,8 @@ private:
     float scrollOffset = 0.f;
 
     // Helper method to link up with your existing asset/sprite map
-    sf::Sprite getMiniSprite(PieceType type, Color color);
+    sf::Sprite getMiniSprite(view::PieceType type, view::Color color);
+    bool loadFont();
 
 public:
     SidePanel(float boardSize, float width, float height);
@@ -24,14 +32,30 @@ public:
 
     void render(sf::RenderWindow& window, int pointImbalance, 
                        const std::vector<std::string>& moveHistory, 
-                       const std::vector<PieceType>& whiteCaptured, 
-                       const std::vector<PieceType>& blackCaptured);
+                       const view::CapturedPieces& whiteCaptured, 
+                       const view::CapturedPieces& blackCaptured);
     void handleScroll(float delta);
     
 };
 
-sf::Sprite SidePanel::getMiniSprite(PieceType type, Color color) {
+sf::Sprite SidePanel::getMiniSprite(view::PieceType type, view::Color color) {
     return renderer.getSpriteForPiece(type, color);
+}
+
+bool SidePanel::loadFont() {
+    std::vector<std::string> paths = {
+        "Sidepanel/arial.ttf",
+        "InteractiveBoard/Sidepanel/arial.ttf",
+        "../InteractiveBoard/Sidepanel/arial.ttf"
+    };
+
+    for (const auto& path : paths) {
+        if (font.openFromFile(path)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 SidePanel::SidePanel(float x, float width, float height) 
@@ -41,7 +65,7 @@ SidePanel::SidePanel(float x, float width, float height)
     background.setPosition({startX, 0.f}); // (960, 0)
     background.setFillColor(sf::Color(35, 35, 35));
 
-    if (!font.openFromFile("Sidepanel/arial.ttf")) { 
+    if (!loadFont()) { 
         std::cerr << "Error loading font\n";
     }
 
@@ -66,8 +90,8 @@ void SidePanel::handleScroll(float delta) {
 
 void SidePanel::render(sf::RenderWindow& window, int pointImbalance, 
                        const std::vector<std::string>& moveHistory, 
-                       const std::vector<PieceType>& whiteCaptured, 
-                       const std::vector<PieceType>& blackCaptured) {
+                       const view::CapturedPieces& whiteCaptured, 
+                       const view::CapturedPieces& blackCaptured) {
     // 1. Clear application viewport background layout panel
    window.draw(background);
 
@@ -76,7 +100,7 @@ void SidePanel::render(sf::RenderWindow& window, int pointImbalance,
     // Render White's Captured Pieces (Captured by Black side)
     float whiteStartX = 990.f;
     for (size_t i = 0; i < whiteCaptured.size(); ++i) {
-        sf::Sprite capSprite = renderer.getSpriteForPiece(whiteCaptured[i], Color::Black); 
+        sf::Sprite capSprite = renderer.getSpriteForPiece(whiteCaptured[i], view::Color::Black); 
         capSprite.setScale({0.22f, 0.22f});
         capSprite.setPosition({whiteStartX + (i * 18.f), 880.f}); 
         window.draw(capSprite);
@@ -85,7 +109,7 @@ void SidePanel::render(sf::RenderWindow& window, int pointImbalance,
     // Render Black's Captured Pieces (Captured by White side)
     float blackStartX = 990.f;
     for (size_t i = 0; i < blackCaptured.size(); ++i) {
-        sf::Sprite capSprite = renderer.getSpriteForPiece(blackCaptured[i], Color::White);
+        sf::Sprite capSprite = renderer.getSpriteForPiece(blackCaptured[i], view::Color::White);
         capSprite.setScale({0.22f, 0.22f});
         capSprite.setPosition({blackStartX + (i * 18.f), 65.f}); 
         window.draw(capSprite);

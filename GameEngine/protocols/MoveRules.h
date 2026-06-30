@@ -1,6 +1,6 @@
 #pragma once
-#include "../../comon.h"
 #include "../Pieces/piece.h"
+#include <cmath>
 
 using namespace std;
 

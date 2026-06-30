@@ -1,5 +1,4 @@
 #include "CaptureTracker.h"
-#include "../../comon.h"
 
 using namespace std;
 

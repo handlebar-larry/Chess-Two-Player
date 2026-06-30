@@ -1,5 +1,4 @@
 #pragma once
-#include "../../comon.h"
 
 enum class Color { White, Black };
 enum class PieceType { Pawn, Rook, Knight, Bishop, Queen, King };

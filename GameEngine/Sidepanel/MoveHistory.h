@@ -1,6 +1,6 @@
-#include "../../comon.h"
 #include "../Pieces/piece.h"
 #include "../protocols/GameState.h"
+#include <string>
 
 using namespace std;
 

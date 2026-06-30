@@ -1,112 +1,125 @@
 #pragma once
-#include "../GameEngine/board/Board.h" 
-#include "../comon.h"
+
+#include "ViewTypes.h"
+#include <SFML/Graphics.hpp>
+#include <cstdlib>
+#include <iostream>
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
 
 class GraphicsRenderer {
 private:
     sf::Texture boardTexture;
     std::optional<sf::Sprite> boardSprite;
-    
-    // A structural map to hold our individual piece textures in VRAM
     std::map<std::string, sf::Texture> pieceTextures;
 
-    const int TILE_SIZE = 120; // 960 / 8
+    const int TILE_SIZE = 120;
+
+    bool loadTexture(sf::Texture& texture, const std::vector<std::string>& paths) {
+        for (const auto& path : paths) {
+            if (texture.loadFromFile(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool loadFont(sf::Font& font, const std::vector<std::string>& paths) {
+        for (const auto& path : paths) {
+            if (font.openFromFile(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 public:
     GraphicsRenderer() {
-        // 1. Load Background Board
-        if (!boardTexture.loadFromFile("assets/chessboard.png")) {
-            std::cerr << "XD RUNTIME ERROR: Could not find assets/chessboard.png\n";
+        if (!loadTexture(boardTexture, {
+            "../InteractiveBoard/assets/chessboard.png"
+        })) {
+            std::cerr << "RUNTIME ERROR: Could not find chessboard asset\n";
             std::exit(EXIT_FAILURE);
         }
         boardSprite.emplace(boardTexture);
 
-        // 2. Load all 12 independent piece textures safely
         std::string colors[] = {"white", "black"};
         std::string types[] = {"king", "queen", "bishop", "knight", "rook", "pawn"};
 
         for (const auto& color : colors) {
             for (const auto& type : types) {
                 std::string key = color + "-" + type;
-                std::string filePath = "assets/" + key + ".png"; // e.g., "assets/white_pawn.png"
 
-                if (!pieceTextures[key].loadFromFile(filePath)) {
-                    std::cerr << "❌ RUNTIME ERROR: Failed to load asset: " << filePath << "\n";
+                if (!loadTexture(pieceTextures[key], {
+                    "../InteractiveBoard/assets/" + key + ".png"
+                })) {
+                    std::cerr << "RUNTIME ERROR: Failed to load asset: " << key << "\n";
                     std::exit(EXIT_FAILURE);
                 }
             }
         }
-        std::cout << "-_- All 12 standalone 128x128 assets mapped cleanly into memory!\n";
     }
 
-    void drawGame(sf::RenderWindow& window, const Board& board) {
-        
+    void drawGame(sf::RenderWindow& window, const view::BoardSnapshot& pieces) {
         if (boardSprite) {
-            window.draw(*boardSprite); 
+            window.draw(*boardSprite);
         }
 
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                Piece* piece = board.getPiece(r, c);
-                if (piece != nullptr) {
-                    sf::Sprite spriteToDraw = getSpriteForPiece(piece->getType(), piece->getColor());
-                    
-                    // Center positioning math:
-                    // 120px square tile - 100px downscaled piece = 20px leftover space.
-                    // Dividing by 2 gives a uniform 10px clearance border on all sides!
-                    float posX = static_cast<float>(c * TILE_SIZE) + 3.0f;
-                    float posY = static_cast<float>(r * TILE_SIZE) + 5.0f;
-                    
-                    spriteToDraw.setPosition({posX, posY}); 
-                    window.draw(spriteToDraw);
-                }
-            }
+        for (const auto& piece : pieces) {
+            sf::Sprite spriteToDraw = getSpriteForPiece(piece.type, piece.color);
+            spriteToDraw.setPosition({
+                static_cast<float>(piece.col * TILE_SIZE) + 3.0f,
+                static_cast<float>(piece.row * TILE_SIZE) + 5.0f
+            });
+            window.draw(spriteToDraw);
         }
 
         sf::Font boardFont;
-        if (!boardFont.openFromFile("Sidepanel/arial.ttf")) {
-            std::cerr << "XD RUNTIME ERROR: Board markers nahi mile! Path check kijiye.\n";
+        if (!loadFont(boardFont, {
+            "../InteractiveBoard/Sidepanel/arial.ttf"
+        })) {
+            std::cerr << "RUNTIME ERROR: Could not find board marker font\n";
+            return;
         }
 
         sf::Text rankFileText(boardFont);
-        rankFileText.setFont(boardFont);
         rankFileText.setCharacterSize(18);
+        rankFileText.setFillColor(sf::Color(35, 35, 35));
 
-        // 1. Draw Files (a-h) along the bottom edge of Row index 7
         for (int c = 0; c < 8; ++c) {
             rankFileText.setString(static_cast<char>('a' + c));
-            // Alternating text color contrast depending on tile background colors
-            rankFileText.setFillColor(sf::Color(35, 35, 35)); 
-            rankFileText.setPosition({static_cast<float>(c * TILE_SIZE) + 5.f, static_cast<float>(8 * TILE_SIZE) - 20.f});
+            rankFileText.setPosition({
+                static_cast<float>(c * TILE_SIZE) + 5.f,
+                static_cast<float>(8 * TILE_SIZE) - 20.f
+            });
             window.draw(rankFileText);
         }
 
-        // 2. Draw Ranks (1-8) along the right side of Column index 7
         for (int r = 0; r < 8; ++r) {
             rankFileText.setString(static_cast<char>('8' - r));
-            rankFileText.setFillColor(sf::Color(35, 35, 35));
-            rankFileText.setPosition({static_cast<float>(8 * TILE_SIZE) - 15.f, static_cast<float>(r * TILE_SIZE) + 5.f});
+            rankFileText.setPosition({
+                static_cast<float>(8 * TILE_SIZE) - 15.f,
+                static_cast<float>(r * TILE_SIZE) + 5.f
+            });
             window.draw(rankFileText);
         }
-        
     }
-    sf::Sprite getSpriteForPiece(PieceType type, Color color) {
-        // FORCE STRINGS TO LOWERCASE TO MATCH YOUR "white-king.png" DIRECTORY FILENAMES
-        std::string colorKey = (color == Color::White) ? "white" : "black";
-        
-        std::string typeKey = "";
+
+    sf::Sprite getSpriteForPiece(view::PieceType type, view::Color color) {
+        std::string colorKey = (color == view::Color::White) ? "white" : "black";
+        std::string typeKey;
+
         switch (type) {
-            case PieceType::Queen:  typeKey = "queen"; break; 
-            case PieceType::King:   typeKey = "king"; break; 
-            case PieceType::Bishop: typeKey = "bishop"; break; 
-            case PieceType::Knight: typeKey = "knight"; break;
-            case PieceType::Rook:   typeKey = "rook"; break;
-            case PieceType::Pawn:   typeKey = "pawn"; break;
+            case view::PieceType::Queen:  typeKey = "queen"; break;
+            case view::PieceType::King:   typeKey = "king"; break;
+            case view::PieceType::Bishop: typeKey = "bishop"; break;
+            case view::PieceType::Knight: typeKey = "knight"; break;
+            case view::PieceType::Rook:   typeKey = "rook"; break;
+            case view::PieceType::Pawn:   typeKey = "pawn"; break;
         }
 
-        // Pull out the standalone texture safely using lower-case hyphen mappings
-        sf::Sprite sprite(pieceTextures[colorKey + "-" + typeKey]); 
-
-        return sprite;
+        return sf::Sprite(pieceTextures[colorKey + "-" + typeKey]);
     }
 };

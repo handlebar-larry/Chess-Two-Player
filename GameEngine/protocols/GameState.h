@@ -1,6 +1,6 @@
 #pragma once
-#include "../../comon.h"
 #include "../board/Board.h"
+#include <utility>
 
 using namespace std;
 

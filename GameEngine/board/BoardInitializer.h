@@ -1,11 +1,11 @@
 #pragma once
 #include "Board.h"
-#include "../Pieces/Pawn.h"
-#include "../Pieces/Rook.h"
-#include "../Pieces/Knight.h"
-#include "../Pieces/Bishop.h"
-#include "../Pieces/Queen.h"
-#include "../Pieces/King.h"
+#include "../Pieces/pawn.h"
+#include "../Pieces/rook.h"
+#include "../Pieces/knight.h"
+#include "../Pieces/bishop.h"
+#include "../Pieces/queen.h"
+#include "../Pieces/king.h"
 
 class BoardInitializer {
 public:

@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
-#include "../comon.h"
-#include "../GameEngine/GameController.h"
+#include "../GameEngine/Gamecontroller.h"
 #include "../GameEngine/board/Board.h"
 #include "../GameEngine/protocols/GameState.h"
-#include "../GameEngine/Pieces/Pawn.h"
-#include "../GameEngine/Pieces/King.h"
-#include "../GameEngine/Pieces/Rook.h"
-#include "../GameEngine/Pieces/Bishop.h"
+#include "../GameEngine/Pieces/pawn.h"
+#include "../GameEngine/Pieces/king.h"
+#include "../GameEngine/Pieces/rook.h"
+#include "../GameEngine/Pieces/bishop.h"
+#include <iostream>
+#include <sstream>
 
 // Test Fixture to set up a clean board sandbox for every individual test case
 class ChessEngineTest : public ::testing::Test {

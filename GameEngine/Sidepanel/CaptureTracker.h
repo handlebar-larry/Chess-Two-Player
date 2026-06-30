@@ -1,8 +1,8 @@
 #ifndef CAPTURE_TRACKER_H
 #define CAPTURE_TRACKER_H
 
-#include "../../comon.h"
 #include "../Pieces/piece.h"
+#include <vector>
 
 using namespace std;
 

@@ -2,9 +2,10 @@
 #include "board/Board.h"
 #include "protocols/GameState.h"
 #include "protocols/SpecialOperations.h"
-#include "Sidepanel/CaptureTracker.cpp"
-#include "Sidepanel/MoveHistory.h"
-#include "../comon.h"
+#include "Sidepanel/CaptureTracker.h"
+#include <cmath>
+#include <iostream>
+#include <utility>
 
 using namespace std;
 
@@ -65,6 +66,7 @@ public:
         Piece* p = board.getPiece(sx, sy);
         bool isCapture = (board.getPiece(ex, ey) != nullptr);
         bool isPawn = (p && p->getType() == PieceType::Pawn);
+        Color movingColor = p->getColor();
 
         if (SpecialOperations::tryCastling(sx, sy, ex, ey, currentTurn, board, stateManager)) { 
             switchTurn(); 
@@ -93,18 +95,13 @@ public:
         // --- STANDARD RESOLUTION ---
         Piece* targetPiece = board.getPiece(ex, ey);
         if (targetPiece) {
+            PieceType capturedType = targetPiece->getType();
             delete targetPiece;
-            tracker.logCapture(targetPiece->getType(), movingPiece->getColor());
+            tracker.logCapture(capturedType, movingColor);
         }
 
         board.movePieceOnMatrix(sx, sy, ex, ey);
         bool promoted = SpecialOperations::handlePromotion(ex, ey, board);
-
-        if(promoted){
-            tracker.logCapture(board.getPiece(ex,ey)->getType(), movingPiece->getColor());
-            Color victimColor = movingPiece->getColor() == Color::White ? Color::Black : Color::White;
-            tracker.logCapture(movingPiece->getType(),victimColor);
-        }
 
         enPassantTarget = {-1, -1};
         if (!promoted && board.getPiece(ex, ey)->getType() == PieceType::Pawn && abs(sx - ex) == 2) {

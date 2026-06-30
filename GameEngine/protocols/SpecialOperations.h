@@ -1,11 +1,14 @@
 #pragma once
 #include "GameState.h"
-#include "../../comon.h"
 #include "../board/Board.h"
-#include "../Pieces/Queen.h"
-#include "../Pieces/Rook.h"
-#include "../Pieces/Bishop.h"
-#include "../Pieces/Knight.h"
+#include "../Pieces/queen.h"
+#include "../Pieces/rook.h"
+#include "../Pieces/bishop.h"
+#include "../Pieces/knight.h"
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <utility>
 
 using namespace std;
 

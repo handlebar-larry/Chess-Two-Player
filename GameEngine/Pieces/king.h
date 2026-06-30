@@ -1,5 +1,6 @@
 #pragma once
 #include "piece.h"
+#include <cmath>
 
 using namespace std;
 
